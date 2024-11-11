@@ -1,36 +1,31 @@
-const decodeTheRing = function (s, p) {
-    let message=s;
-    let key=p;
-    const m = message.length;
-    const n = key.length;
-
-    // Create a 2D dp array where dp[i][j] represents whether message[0..i-1] matches key[0..j-1]
-    const dp = Array(m + 1).fill(false).map(() => Array(n + 1).fill(false));
-
-    // Base case: both message and key are empty
-    dp[0][0] = true;
-
-    // Fill first row for patterns starting with *
-    for (let j = 1; j <= n; j++) {
-        if (key[j - 1] === '*') {
-            dp[0][j] = dp[0][j - 1];
+const getTotalIsles = function (grid) {
+    if (!grid || grid.length === 0) return 0;
+    
+    const rows = grid.length;
+    const cols = grid[0].length;
+    let islandCount = 0;
+    
+    const dfs = (i, j) => {
+      if (i < 0 || j < 0 || i >= rows || j >= cols || grid[i][j] === 'W') return;
+      grid[i][j] = 'W';
+      dfs(i - 1, j);
+      dfs(i + 1, j);
+      dfs(i, j - 1);
+      dfs(i, j + 1);
+    };
+    
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        if (grid[i][j] === 'L') {
+          islandCount++;
+          dfs(i, j);
         }
+      }
     }
-
-    // Fill the rest of the dp array
-    for (let i = 1; i <= m; i++) {
-        for (let j = 1; j <= n; j++) {
-            if (key[j - 1] === '*') {
-                // '*' can either match zero characters (dp[i][j-1]) or one character (dp[i-1][j])
-                dp[i][j] = dp[i][j - 1] || dp[i - 1][j];
-            } else if (key[j - 1] === '?' || key[j - 1] === message[i - 1]) {
-                // '?' matches any single character, or exact character match
-                dp[i][j] = dp[i - 1][j - 1];
-            }
-        }
-    }
-
-    return dp[m][n];
-};
   
-  module.exports = decodeTheRing;
+    return islandCount;
+  };
+  
+module.exports = getTotalIsles;
+
+ 
